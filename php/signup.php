@@ -18,29 +18,32 @@
             $email = $_POST['email'];
             $password = $_POST['password'];
             $con_password = $_POST['con_password'];
-            if ($password == $con_password) {
-                $hash = password_hash($password, PASSWORD_BCRYPT);
 
-                //check email are already exists
+            if ($password == $con_password) {
+                $hash = md5($password); // Using MD5 for password hashing
+
+                // Check if email already exists
                 $check = "SELECT * FROM `user` WHERE email = '$email'";
                 $run = $conn->query($check);
                 if ($run->num_rows > 0) {
-                    echo "email are already exists";
+                    echo "Email already exists";
                 } else {
-                    $sql = "INSERT INTO `user`(`name`, `email`, `password`) values('$name','$email','$hash')";
+                    $sql = "INSERT INTO `user`(`name`, `email`, `password`) VALUES('$name','$email','$hash')";
                     $result = $conn->query($sql);
                     if ($result) {
-                        echo "data are inserted";
+                        echo "Signup successful! Redirecting login.....";
+                        header("refresh:1; url=login.php"); // Redirect to home page after 1 second
+                        exit();
                     } else {
-                        echo "something wrongs";
+                        echo "Something went wrong";
                     }
                 }
-            }
-            else{
-                echo "password or conform password are decant matched ";
+            } else {
+                echo "Password and confirm password do not match";
             }
         }
         ?>
+
         <form action="#" method="post">
             <label for="name">Name</label>
             <input type="text" id="name" name="name" placeholder="Enter your name" required>

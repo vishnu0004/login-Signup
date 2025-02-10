@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,28 +11,28 @@
         <h2>Login</h2>
         <?php
         session_start();
-    include('../config/conn.php');
-    if(isset($_POST['submit'])){
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-         $sql = "select * from user where email = '$email'";
-         $result = $conn->query($sql);
-         if(mysqli_num_rows($result) > 0 ){
-            echo "login to home page ";
-            // header("refresh:1; url=home.php");
+        include('../config/conn.php');
 
-            $row = $result->fetch_assoc();
-            if(password_verify($password, $row['password'])){
-                $_SESSION['password'] = $row['name'];
-            }else{
-                echo "error";
+        if (isset($_POST['submit'])) {
+            $email = $_POST['email'];
+            $password = md5($_POST['password']); // Hash input password using MD5
+
+            $sql = "SELECT * FROM user WHERE email = '$email' AND password = '$password'";
+            $result = $conn->query($sql);
+
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $_SESSION['user'] = $row['name']; // Store user session
+                
+                echo "Login successful! Redirecting...";
+                header("refresh:1; url=home.php"); // Redirect to home page after 1 second
+                exit();
+            } else {
+                echo "<p style='color:red;'>Invalid email or password.</p>";
             }
-         }
-         else{
-            echo "somethings wrong";
-         }
-    }
-    ?>
+        }
+        ?>
+        
         <form action="login.php" method="post">
             <label for="email">Email</label>
             <input type="email" id="email" name="email" placeholder="Enter your email" required>
